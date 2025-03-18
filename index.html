@@ -3,27 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Request with Credentials</title>
+    <title>XMLHttpRequest with Credentials</title>
 </head>
 <body>
-    <h1>Simple CORS Request with Credentials</h1>
+    <h1>Simple CORS Request with XMLHttpRequest</h1>
     <button onclick="makeCorsRequest()">Fetch Data</button>
     <pre id="result"></pre>
 
     <script>
         function makeCorsRequest() {
-            fetch("https://opsg-gateway-in.oppo.com/v2/api/rest/mallapp/user/address/list/fetch?storeViewCode=in&storeCode=in&configModule=3&countryCode=IN&deviceType=2&source=1", {
-                method: "GET",
-                credentials: "include",  // Ensures cookies & credentials are sent
-                headers: {
-                    "Content-Type": "application/json"
+            var req = new XMLHttpRequest();
+            req.withCredentials = true;  // Ensures cookies & credentials are sent
+            
+            req.open('GET', 'https://opsg-gateway-in.oppo.com/v2/api/rest/mallapp/user/address/list/fetch?storeViewCode=in&storeCode=in&configModule=3&countryCode=IN&deviceType=2&source=1', true);
+            
+            req.setRequestHeader("Content-Type", "application/json");
+
+            req.onload = function () {
+                if (req.status >= 200 && req.status < 300) {
+                    document.getElementById("result").textContent = req.responseText;
+                } else {
+                    console.error("Request failed with status:", req.status);
                 }
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-            })
-            .catch(error => console.error("Error:", error));
+            };
+
+            req.onerror = function () {
+                console.error("Network error occurred");
+            };
+
+            req.send();
         }
     </script>
 </body>
