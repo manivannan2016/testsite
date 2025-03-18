@@ -2,50 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Temporary CORS Test Site</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f0f0f0; color: #333; }
-        h1 { color: #007BFF; }
-        button { padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        pre { background-color: #fff; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); white-space: pre-wrap; max-width: 600px; }
-        .container { max-width: 800px; margin: 0 auto; }
-    </style>
+    <title>CORS Test</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Temporary CORS Test</h1>
-        <p>Click to test the cross-origin request.</p>
-        <button onclick="fetchData()">Fetch Data</button>
-        <pre id="result">Response will appear here...</pre>
-    </div>
+    <button onclick="fetchData()">Fetch</button>
+    <div id="result">Click to fetch...</div>
 
     <script>
-        async function fetchData() {
-            // Replace with your actual target URL
-            const url = 'https://api.example.com/data'; // Update this!
-            const resultElement = document.getElementById('result');
-            resultElement.textContent = 'Fetching...';
+        function fetchData() {
+            const url = 'https://api.example.com/data'; // Replace with your URL
+            const result = document.getElementById('result');
+            result.textContent = 'Fetching...';
 
-            try {
-                const response = await fetch(url, {
-                    method: 'GET',
-                    credentials: 'include' // Still needed for cookies/auth
-                    // Removed 'Content-Type': 'application/json' to avoid preflight
-                });
-
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(HTTP error! Status: ${response.status} - ${errorText});
-                }
-
-                const data = await response.text(); // Use .json() if it’s JSON
-                resultElement.textContent = data || 'Success, but no content returned!';
-            } catch (error) {
-                console.error('Fetch error:', error);
-                resultElement.textContent = Error: ${error.message};
-            }
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error(Status: ${response.status});
+                    return response.text(); // Use .json() if your API returns JSON
+                })
+                .then(data => result.textContent = data || 'No content')
+                .catch(error => result.textContent = Error: ${error.message});
         }
     </script>
 </body>
