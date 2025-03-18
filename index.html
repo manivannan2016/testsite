@@ -23,19 +23,28 @@
 
     <script>
         async function fetchData() {
-            const url = 'https://opsg-gateway-in.oppo.com/v2/api/rest/mallapp/user/address/list/fetch?storeViewCode=in&storeCode=in&configModule=3&countryCode=IN&deviceType=2&source=1'; // Replace with your target URL
+            // Replace with your actual target URL
+            const url = 'https://api.example.com/data'; // Update this!
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = 'Fetching...';
+
             try {
                 const response = await fetch(url, {
                     method: 'GET',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' }
+                    credentials: 'include' // Still needed for cookies/auth
+                    // Removed 'Content-Type': 'application/json' to avoid preflight
                 });
-                if (!response.ok) throw new Error(HTTP error! Status: ${response.status});
-                const data = await response.text();
-                document.getElementById('result').textContent = data;
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(HTTP error! Status: ${response.status} - ${errorText});
+                }
+
+                const data = await response.text(); // Use .json() if it’s JSON
+                resultElement.textContent = data || 'Success, but no content returned!';
             } catch (error) {
                 console.error('Fetch error:', error);
-                document.getElementById('result').textContent = Error: ${error.message}\nCheck console for details.;
+                resultElement.textContent = Error: ${error.message};
             }
         }
     </script>
