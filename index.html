@@ -2,25 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CORS Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Request with Credentials</title>
 </head>
 <body>
-    <button onclick="fetchData()">Fetch</button>
-    <div id="result">Click to fetch...</div>
+    <h1>Simple CORS Request with Credentials</h1>
+    <button onclick="makeCorsRequest()">Fetch Data</button>
+    <pre id="result"></pre>
 
     <script>
-        function fetchData() {
-            const url = 'https://opsg-gateway-in.oppo.com/v2/api/rest/mallapp/user/address/list/fetch?storeViewCode=in&storeCode=in&configModule=3&countryCode=IN&deviceType=2&source=1'; // Replace with your URL
-            const result = document.getElementById('result');
-            result.textContent = 'Fetching...';
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error(Status: ${response.status});
-                    return response.text(); // Use .json() if your API returns JSON
-                })
-                .then(data => result.textContent = data || 'No content')
-                .catch(error => result.textContent = Error: ${error.message});
+        function makeCorsRequest() {
+            fetch("https://opsg-gateway-in.oppo.com/v2/api/rest/mallapp/user/address/list/fetch?storeViewCode=in&storeCode=in&configModule=3&countryCode=IN&deviceType=2&source=1", {
+                method: "GET",
+                credentials: "include",  // Ensures cookies & credentials are sent
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(error => console.error("Error:", error));
         }
     </script>
 </body>
